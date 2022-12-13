@@ -36,11 +36,48 @@ if (isset($_POST['submit'])) {
 
         //Check if password and db password are
 
-        if(sha1($password) == $result['password']){
+        if($password == $result['password']){
           
           $_SESSION['admin_logged']=true;
           $_SESSION['admin_id']= $result['id'];
           $_SESSION['admin_email']= $result['email'];
+
+          // header('location: views/admin/index.php');
+
+        }else{
+          $error=true;
+          $error_password= 'Password wrong';
+        }
+
+
+      
+      }
+
+    }else{
+      $error= true;
+      $error_email = 'Email not reconize';
+    }
+
+  }else{
+    //Login as User
+
+    //Check if the email is reconize in our database*
+
+    $checkEmailExist = $databaseConnexion->prepare('SELECT * from user where email = ?');
+
+    $checkEmailExist->execute(array($email));
+
+    if($checkEmailExist->rowCount() >=1){
+
+      foreach($checkEmailExist as $result){
+
+        //Check if password and db password are
+
+        if(sha1($password) == $result['password']){
+          
+          $_SESSION['user_logged']=true;
+          $_SESSION['user_id']= $result['id'];
+          $_SESSION['user_email']= $result['email'];
 
           header('location: views/admin/index.php');
 
@@ -58,9 +95,6 @@ if (isset($_POST['submit'])) {
       $error= true;
       $error_email = 'Email not reconize';
     }
-
-  }else{
-    //Login as customer
   }
   }else{
     $error= true;
@@ -113,8 +147,8 @@ if (isset($_POST['submit'])) {
     <div style="display: flex; color:#8086a9;
   ">
       <div class="links">
-        <a href="/views/customer/signin" class="link">Create an account</a>
-        <a href="/views/admin/registration" class="link">Admin account</a>
+        <!-- <a href="/views/customer/signin" class="link">Create an account</a>
+        <a href="/views/admin/registration" class="link">Admin account</a> -->
       </div>
     </div>
     <button type="submit" name="submit">Login</button>

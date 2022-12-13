@@ -21,7 +21,7 @@ if (isset($_POST['submit'])) {
 
         //check if the entered email is not exist in database
 
-        $checkEmailExist = $databaseConnexion->prepare('SELECT email from admins where email = ?');
+        $checkEmailExist = $databaseConnexion->prepare('SELECT email from user where email = ?');
 
         $checkEmailExist->execute(array($email));
 
@@ -32,13 +32,13 @@ if (isset($_POST['submit'])) {
 
             if ($password == $confirmPassword) {
 
-                //Save the Admin
+                //Save the User
 
-                $saveAdmin = $databaseConnexion->prepare('INSERT INTO admins(email, password) VALUES(?,?)');
-                $saveAdmin->execute(array($email, sha1($password)));
+                $saveUser = $databaseConnexion->prepare('INSERT INTO user(email, password) VALUES(?,?)');
+                $saveUser->execute(array($email, sha1($password)));
 
-                if ($saveAdmin) {
-                    header('location: index.php');
+                if ($saveUser) {
+                    // header('location: index.php');
                 } else {
                     $error = true;
                     $error_email = 'Error when creatind your account';
@@ -70,7 +70,7 @@ if (isset($_POST['submit'])) {
 
 <body>
 
-    <h1>Register as Admin</h1>
+    <h1>Register as User</h1>
     <form method="post">
         <?php
 
@@ -97,7 +97,7 @@ if (isset($_POST['submit'])) {
             <input type="password" name="confirmPassword">
         </div>
         </div>
-        <button type="submit" name="submit">Registration as admin</button>
+        <button type="submit" name="submit">Registration as user</button>
 
         <div class="links">
             <a href="../../index.php" class="link">Back to login</a>
@@ -108,3 +108,45 @@ if (isset($_POST['submit'])) {
 </body>
 
 </html>
+
+ALTER TABLE professor ADD FOREIGN KEY (dept_id) REFERENCES department(dept_id);
+ALTER TABLE semester_course ADD FOREIGN KEY (course_code) REFERENCES course(course_code);
+ALTER TABLE semester_course ADD FOREIGN KEY (prof_id) REFERENCES professor(prof_id);
+ALTER TABLE enrolled ADD FOREIGN KEY (student_id) REFERENCES student(student_id);
+ALTER TABLE enrolled ADD FOREIGN KEY (course_code) REFERENCES course(course_code);
+ALTER TABLE enrolled ADD FOREIGN KEY (course_code) REFERENCES semester_course(course_code);
+
+
+CREATE TABLE professor
+(
+    professor_id int not null AUTO_INCREMENT,
+    professor_name varchar(50) ,
+    dept_id int ,
+    PRIMARY KEY(professor_id)
+);
+
+CREATE TABLE course
+(
+    course_code varchar(50) not null,
+    name varchar(50) ,
+    PRIMARY KEY(course_code)
+);
+
+CREATE TABLE semester_course
+(
+    course_code varchar(50) ,
+    quarter varchar(50) ,
+    year int,
+    prof_id int,
+    PRIMARY KEY(course_code,quarter,year)
+);
+
+CREATE TABLE enrolled
+(
+    student_id int ,
+    course_code varchar(50) ,
+    quarter varchar(50) ,
+    year int,
+    enrolled_at varchar(50),
+    PRIMARY KEY(student_id,course_code,quarter,year)
+);
